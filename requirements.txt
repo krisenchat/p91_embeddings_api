@@ -1,0 +1,6 @@
+numpy
+pandas
+InstructorEmbedding
+fastapi==0.103.1
+uvicorn==0.22.0
+sentence-transformers
