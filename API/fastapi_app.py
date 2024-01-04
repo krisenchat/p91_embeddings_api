@@ -18,7 +18,7 @@ import numpy as np
 # Initialize the FastAPI app
 app = FastAPI(redirect_slashes=True)
 
-model = INSTRUCTOR('hkunlp/instructor-xl')
+model = INSTRUCTOR('hkunlp/instructor-large')
 
 
 
