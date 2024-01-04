@@ -51,6 +51,7 @@ async def get_doc_embeddings(request: EmbeddingRequest) -> EmbeddingResponse:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 # Query Embedding Endpoint
+
 @app.post("/get_query_embeddings", response_model=EmbeddingResponse, tags=["Embedding"])
 async def get_query_embeddings(request: EmbeddingRequest) -> EmbeddingResponse:
     """Compute document embeddings using a HuggingFace transformer model.
