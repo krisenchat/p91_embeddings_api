@@ -1,17 +1,17 @@
 import os
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from starlette.responses import JSONResponse
-from typing import List
 import numpy as np
-from InstructorEmbedding import INSTRUCTOR
+
+from API.base_models import EmbeddingResponse, EmbeddingRequest
+from API.resource_manager import ResourceManager
 
 # Initialize the FastAPI app
 app = FastAPI(redirect_slashes=True)
 
-# Initialize the model
-model = INSTRUCTOR('hkunlp/instructor-large')
+resource_manager = ResourceManager()
+
+embeddings_model = resource_manager.model
 
 # Endpoint for the root path
 @app.get("/", include_in_schema=False)
@@ -22,14 +22,6 @@ async def root():
 @app.get("/health", include_in_schema=False)
 async def health_check():
     return {"status": "ok"}
-
-# Request Model
-class EmbeddingRequest(BaseModel):
-    texts: List[str]
-
-# Response Model
-class EmbeddingResponse(BaseModel):
-    embeddings: List[List[float]]
 
 # Doc Embedding Endpoint
 @app.post("/get_doc_embeddings", response_model=EmbeddingResponse, tags=["Embedding"])
@@ -44,7 +36,7 @@ async def get_doc_embeddings(request: EmbeddingRequest) -> EmbeddingResponse:
     """
     try:
         instruction_pairs = [["Represent the document for retrieval: ", text] for text in request.texts]
-        embeddings = model.encode(instruction_pairs)
+        embeddings = embeddings_model.encode(instruction_pairs)
         embeddings_list = embeddings.tolist() if isinstance(embeddings, np.ndarray) else embeddings
         return EmbeddingResponse(embeddings=embeddings_list)
     except Exception as e:
@@ -63,7 +55,7 @@ async def get_query_embeddings(request: EmbeddingRequest) -> EmbeddingResponse:
     """
     try:
         instruction_pairs = [["Represent the question for retrieving supporting documents: ", text] for text in request.texts]
-        embeddings = model.encode(instruction_pairs)
+        embeddings = embeddings_model.encode(instruction_pairs)
         embeddings_list = embeddings.tolist() if isinstance(embeddings, np.ndarray) else embeddings
         return EmbeddingResponse(embeddings=embeddings_list)
     except Exception as e:
