@@ -19,7 +19,7 @@ RUN make install
 
 # Copy the source code into the container
 COPY . .
-
+EXPOSE 8080
 
 # Command to run the application
 CMD ["make", "run"]

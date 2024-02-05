@@ -10,6 +10,7 @@ from API.resource_manager import ResourceManager
 app = FastAPI(redirect_slashes=True)
 
 resource_manager = ResourceManager()
+resource_manager.load_model("hkunlp/instructor-large")
 
 embeddings_model = resource_manager.model
 
@@ -60,6 +61,17 @@ async def get_query_embeddings(request: EmbeddingRequest) -> EmbeddingResponse:
         return EmbeddingResponse(embeddings=embeddings_list)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
+@app.post("/reload_embeddings_model", tags=["Reloading"])
+async def reload_embeddings_model():
+    """For extreme cases where the periodic reloading of the model is not enough, this endpoint provides a last solution
+    for manual reloading (garbage collecting) of the embeddings model """
+    try:
+        resource_manager.reload_model()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
+    return JSONResponse(content={"message": "Successfully reloaded model"}, status_code=200)
 
 # Main Function
 if __name__ == "__main__":
