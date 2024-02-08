@@ -2,6 +2,7 @@ import os
 import uvicorn
 from fastapi import FastAPI, HTTPException
 import numpy as np
+from starlette.responses import JSONResponse
 
 from API.base_models import EmbeddingResponse, EmbeddingRequest
 from API.resource_manager import ResourceManager
