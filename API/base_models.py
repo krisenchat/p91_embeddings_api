@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 
 class EmbeddingRequest(BaseModel):
-    texts: List[str]
+    texts: object
 
 # Response Model
 class EmbeddingResponse(BaseModel):

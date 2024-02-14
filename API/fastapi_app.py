@@ -5,7 +5,10 @@ import numpy as np
 from starlette.responses import JSONResponse
 
 from API.base_models import EmbeddingResponse, EmbeddingRequest
+from config_manager import ConfigManager
 from API.resource_manager import ResourceManager
+
+from encryption.encryption_manager import EncryptionManager
 
 # Initialize the FastAPI app
 app = FastAPI(redirect_slashes=True)
@@ -14,6 +17,8 @@ resource_manager = ResourceManager()
 resource_manager.load_model("hkunlp/instructor-xl")
 
 embeddings_model = resource_manager.model
+
+encryption_handler = EncryptionManager(encryption_status=True, config_manager=ConfigManager)
 
 # Endpoint for the root path
 @app.get("/", include_in_schema=False)
@@ -37,7 +42,10 @@ async def get_doc_embeddings(request: EmbeddingRequest) -> EmbeddingResponse:
         A list of embeddings, one for each text.
     """
     try:
-        instruction_pairs = [["Represent the document for retrieval: ", text] for text in request.texts]
+        texts = encryption_handler.process_incoming_object(request.texts, key_name="encryption_embeddings_key")
+
+        instruction_pairs = [["Represent the document for retrieval: ", text] for text in texts]
+        print("Generating Embeddings")
         embeddings = embeddings_model.encode(instruction_pairs)
         embeddings_list = embeddings.tolist() if isinstance(embeddings, np.ndarray) else embeddings
         return EmbeddingResponse(embeddings=embeddings_list)
@@ -56,7 +64,8 @@ async def get_query_embeddings(request: EmbeddingRequest) -> EmbeddingResponse:
         A list of embeddings, one for each text.
     """
     try:
-        instruction_pairs = [["Represent the question for retrieving supporting documents: ", text] for text in request.texts]
+        texts = encryption_handler.process_incoming_object(request.texts, key_name="test_key_new")
+        instruction_pairs = [["Represent the question for retrieving supporting documents: ", text] for text in texts]
         embeddings = embeddings_model.encode(instruction_pairs)
         embeddings_list = embeddings.tolist() if isinstance(embeddings, np.ndarray) else embeddings
         return EmbeddingResponse(embeddings=embeddings_list)
