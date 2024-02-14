@@ -30,6 +30,17 @@ async def root():
 async def health_check():
     return {"status": "ok"}
 
+@app.get("/gpu_available", include_in_schema=True)
+async def gpu_check():
+    import torch
+
+    if torch.cuda.is_available():
+        print("GPUs ready!")
+        return "GPUs ready!"
+    else:
+        print("GPUs not available")
+        return "GPUs ready!"
+
 # Doc Embedding Endpoint
 @app.post("/get_doc_embeddings", response_model=EmbeddingResponse, tags=["Embedding"])
 async def get_doc_embeddings(request: EmbeddingRequest) -> EmbeddingResponse:
@@ -44,8 +55,10 @@ async def get_doc_embeddings(request: EmbeddingRequest) -> EmbeddingResponse:
     try:
         texts = encryption_handler.process_incoming_object(request.texts, key_name="encryption_embeddings_key")
 
+        print("Received a request, computing document embeddings.")
         instruction_pairs = [["Represent the document for retrieval: ", text] for text in texts]
         print("Generating Embeddings")
+
         embeddings = embeddings_model.encode(instruction_pairs)
         embeddings_list = embeddings.tolist() if isinstance(embeddings, np.ndarray) else embeddings
         return EmbeddingResponse(embeddings=embeddings_list)
@@ -64,8 +77,11 @@ async def get_query_embeddings(request: EmbeddingRequest) -> EmbeddingResponse:
         A list of embeddings, one for each text.
     """
     try:
-        texts = encryption_handler.process_incoming_object(request.texts, key_name="test_key_new")
+        texts = encryption_handler.process_incoming_object(request.texts, key_name="encryption_embeddings_key")
+
+        print("Received a request, computing query embeddings.")
         instruction_pairs = [["Represent the question for retrieving supporting documents: ", text] for text in texts]
+
         embeddings = embeddings_model.encode(instruction_pairs)
         embeddings_list = embeddings.tolist() if isinstance(embeddings, np.ndarray) else embeddings
         return EmbeddingResponse(embeddings=embeddings_list)
@@ -77,6 +93,7 @@ async def reload_embeddings_model():
     """For extreme cases where the periodic reloading of the model is not enough, this endpoint provides a last solution
     for manual reloading (garbage collecting) of the embeddings model """
     try:
+        print("Model is being refreshed.")
         resource_manager.reload_model()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
