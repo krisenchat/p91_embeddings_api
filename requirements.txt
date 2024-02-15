@@ -1,4 +1,4 @@
-git+https://github.com/krisenchat/encryption_manager.git
+git+ssh://git@github.com/krisenchat/encryption_manager.git
 
 numpy
 pandas
