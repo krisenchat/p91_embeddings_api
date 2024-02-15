@@ -3,7 +3,7 @@ git+ssh://git@github.com/krisenchat/encryption_manager.git
 numpy
 pandas
 InstructorEmbedding
-fastapi==0.103.1
+fastapi==0.109.1
 uvicorn==0.22.0
 sentence-transformers==2.2.2
 google-cloud-storage==2.9.0
