@@ -7,10 +7,16 @@ WORKDIR /app
 # Set PYTHONPATH
 ENV PYTHONPATH=/app
 
-# Install make and required build dependencies
-RUN apt-get update && apt-get install -y make build-essential libfreetype6-dev git
+# Install make, build dependencies, and git
+RUN apt-get update && apt-get install -y make build-essential libfreetype6-dev git && rm -rf /var/lib/apt/lists/*
 
-# Copy the Makefile into the container
+# Use an argument for the GitHub token
+ARG GITHUB_TOKEN
+
+# Clone the private repo using HTTPS and the token for authentication
+RUN pip install git+https://${GITHUB_TOKEN}:x-oauth-basic@github.com/krisenchat/encryption_manager.git
+
+# Copy the Makefile and requirements.txt into the container
 COPY Makefile .
 COPY requirements.txt .
 
@@ -19,6 +25,7 @@ RUN make install
 
 # Copy the source code into the container
 COPY . .
+
 EXPOSE 8080
 
 # Command to run the application
