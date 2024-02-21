@@ -7,6 +7,7 @@ from starlette.responses import JSONResponse
 from API.base_models import EmbeddingResponse, EmbeddingRequest
 from config_manager import ConfigManager
 from API.resource_manager import ResourceManager
+import torch
 
 from encryption.encryption_manager import EncryptionManager
 
@@ -14,9 +15,10 @@ from encryption.encryption_manager import EncryptionManager
 app = FastAPI(redirect_slashes=True)
 
 resource_manager = ResourceManager()
-resource_manager.load_model("hkunlp/instructor-xl")
+resource_manager.load_model("hkunlp/instructor-large")
 
 embeddings_model = resource_manager.model
+
 
 encryption_handler = EncryptionManager(encryption_status=True, config_manager=ConfigManager)
 
@@ -32,7 +34,7 @@ async def health_check():
 
 @app.get("/gpu_available", include_in_schema=True)
 async def gpu_check():
-    import torch
+
 
     if torch.cuda.is_available():
         print("GPUs ready!")
@@ -53,6 +55,11 @@ async def get_doc_embeddings(request: EmbeddingRequest) -> EmbeddingResponse:
         A list of embeddings, one for each text.
     """
     try:
+        if torch.cuda.is_available():
+            print("GPUs ready!")
+        else:
+            print("no GPU found")
+
         texts = encryption_handler.process_incoming_object(request.texts, key_name="encryption_embeddings_key")
 
         print("Received a request, computing document embeddings.")
