@@ -13,8 +13,8 @@ class ResourceManager:
 
     def __init__(self):
         self.model = None
-        #self.reload_thread = threading.Thread(target=self.schedule_model_reload, daemon=True)
-        #self.reload_thread.start()
+        self.reload_thread = threading.Thread(target=self.schedule_model_reload, daemon=True)
+        self.reload_thread.start()
 
     def load_model(self, model_name):
         """Loads the embedding model to use"""
@@ -31,5 +31,5 @@ class ResourceManager:
 
     def schedule_model_reload(self):
         while True:
-            time.sleep(3600)  # Sleep for one hour (3600 seconds)
+            time.sleep(3600)
             self.reload_model()
