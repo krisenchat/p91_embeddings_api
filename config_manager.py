@@ -40,13 +40,12 @@ class ConfigManager:
     @staticmethod
     def load_config():
         config = read_config_file()
-        # models_to_load = get_models_to_load(config["models"])
 
-        return config["credentials"], config["credentials"]["project_id"], bool(config["use_local_embeddings"])
+        return config["credentials"], config["credentials"]["project_id"]
 
         # Initialize class attributes by immediately calling load_config
 
-    config, project_id, use_local_embeddings = load_config.__func__()
+    config, project_id = load_config.__func__()
     credentials = None
 
     @staticmethod
@@ -133,6 +132,7 @@ class ConfigManager:
     @staticmethod
     def get_local_embeddings_status():
         return ConfigManager.use_local_embeddings
+
     @staticmethod
     def save_secret_to_gcloud(name, secret_value):
         client = secretmanager.SecretManagerServiceClient()
