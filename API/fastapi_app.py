@@ -11,7 +11,7 @@ from API.resource_manager import ResourceManager
 app = FastAPI(redirect_slashes=True)
 
 resource_manager = ResourceManager()
-resource_manager.load_model("hkunlp/instructor-xl")
+resource_manager.load_model("hkunlp/instructor-large")
 
 embeddings_model = resource_manager.model
 
