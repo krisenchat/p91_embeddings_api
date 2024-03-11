@@ -20,7 +20,7 @@ resource_manager.load_model("hkunlp/instructor-large")
 embeddings_model = resource_manager.model
 
 
-encryption_handler = EncryptionManager(encryption_status=True, config_manager=ConfigManager)
+encryption_handler = EncryptionManager(config_manager=ConfigManager)
 
 # Endpoint for the root path
 @app.get("/", include_in_schema=False)

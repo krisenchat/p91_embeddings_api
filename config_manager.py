@@ -10,7 +10,7 @@ region_pids = {"de": "data-warehouse-338012", "ua": "kc-data-warehouse-uaprod"}
 def read_config_file():
     # Construct the config path
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    env = os.environ.get("ENVIRONMENT", "dev")
+    env = os.environ.get("ENVIRONMENT", "prd")
     config_path = os.path.join(base_dir, 'config', f'config_{env}.yml')
 
     with open(config_path) as file:
@@ -127,7 +127,7 @@ class ConfigManager:
 
     @staticmethod
     def get_env():
-        return os.environ.get("ENVIRONMENT", "dev")
+        return os.environ.get("ENVIRONMENT", "prd")
 
     @staticmethod
     def get_local_embeddings_status():
@@ -200,4 +200,15 @@ class ConfigManager:
             return True
         except Exception as e:
             print(f"Failed to destroy version '{version}' of secret '{name}': {e}")
+            return False
+
+    @staticmethod
+    def set_encryption_status(status):
+        ConfigManager.encryption_status = status
+
+    @staticmethod
+    def get_encryption_status():
+        if ConfigManager.encryption_status:
+            return ConfigManager.encryption_status
+        else:
             return False
