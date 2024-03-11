@@ -204,11 +204,7 @@ class ConfigManager:
 
     @staticmethod
     def set_encryption_status(status):
-        ConfigManager.encryption_status = status
-
+        ConfigManager.save_secret_to_gcloud("embeddings_encryption_status", status)
     @staticmethod
     def get_encryption_status():
-        if ConfigManager.encryption_status:
-            return ConfigManager.encryption_status
-        else:
-            return False
+        return ConfigManager.get_secret("embeddings_encryption_status")
