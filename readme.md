@@ -16,3 +16,7 @@ This API is designed to generate embeddings from text using the HuggingFace mode
 4. Run the server using Uvicorn:
    ```bash
    uvicorn main:app --host 0.0.0.0 --port 8080
+
+## Encryption Module
+The embeddings machine has an encryption module installed. By design, it is not possible to activate/deactivate encryption from the embeddings. In order to toggle this encryption module, please turn it on or off with ```ConfigManager.set_encryption_status(True)``` on the project you're calling the embeddings machine on.
+
