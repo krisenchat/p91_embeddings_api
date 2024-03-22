@@ -31,5 +31,5 @@ class ResourceManager:
 
     def schedule_model_reload(self):
         while True:
-            time.sleep(3600)
+            time.sleep(43200)
             self.reload_model()
